@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Юридическая Викторина</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Викторина по законодательству РК</h1>
+    <div id="question">Загрузка вопроса...</div>
+    <div id="answers"></div>
+    <div class="info">
+      <span id="score">Очки: 0</span>
+      <span id="timer">30</span> сек
+    </div>
+    <button id="next-btn">Следующий</button>
+    <div id="result"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        question: "Какой орган ведет уголовное преследование?",
+        answers: [
+          "Прокуратура",
+          "Суд",
+          "Полиция",
+          "Нотариус"
+        ],
+        correct: 0
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 30;
+
+    const questionEl = document.getElementById("question");
+    const answersEl = document.getElementById("answers");
+    const scoreEl = document.getElementById("score");
+    const timerEl = document.getElementById("timer");
+    const nextBtn = document.getElementById("next-btn");
+    const resultEl = document.getElementById("result");
+
+    function showQuestion() {
+      const q = questions[current];
+      questionEl.textContent = q.question;
+      answersEl.innerHTML = "";
+      q.answers.forEach((ans, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = ans;
+        btn.onclick = () => selectAnswer(i);
+        answersEl.appendChild(btn);
+      });
+      resultEl.textContent = "";
+      startTimer();
+    }
+
+    function selectAnswer(i) {
+      stopTimer();
+      const correct = questions[current].correct;
+      if (i === correct) {
+        score++;
+        scoreEl.textContent = `Очки: ${score}`;
+        resultEl.textContent = "Верно!";
+      } else {
+        resultEl.textContent = `Неверно. Правильный ответ: ${questions[current].answers[correct]}`;
+      }
+      nextBtn.style.display = "inline";
+    }
+
+    function startTimer() {
+      timeLeft = 30;
+      timerEl.textContent = timeLeft;
+      timer = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          selectAnswer(-1);
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timer);
+    }
+
+    nextBtn.onclick = () => {
+      current++;
+      nextBtn.style.display = "none";
+      if (current < questions.length) {
+        showQuestion();
+      } else {
+        questionEl.textContent = "Игра окончена!";
+        answersEl.innerHTML = "";
+        resultEl.textContent = `Ваш итоговый результат: ${score} очков.`;
+      }
+    };
+
+    showQuestion();
+  </script>
+</body>
+</html>
